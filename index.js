@@ -14,22 +14,23 @@ function B2CJ(bibfile, lang, localesfile, stylefile) {
     var json = bibtexparser.toJSON(fs.readFileSync(this.bibfile, 'utf8'));
     var csljson = jsonToCSLJSON(json);
 
-    var sys = new citeproc.simpleSys();
-    var locale = fs.readFileSync(this.localesfile, 'utf8');
-    var style = fs.readFileSync(this.stylefile, 'utf8');
+    //var sys = new citeproc.simpleSys();
+    //var locale = fs.readFileSync(this.localesfile, 'utf8');
+    //var style = fs.readFileSync(this.stylefile, 'utf8');
 
-    sys.addLocale(this.lang, locale);
-    sys.items = csljson;
+    //sys.addLocale(this.lang, locale);
+    //sys.items = csljson;
 
-    var engine = sys.newEngine(style, this.lang, null);
-    engine.updateItems(Object.keys(sys.items));
+    //var engine = sys.newEngine(style, this.lang, null);
+    //engine.updateItems(Object.keys(sys.items));
 
-    var bib = engine.makeBibliography();
-
-    return {
-	bibliography: bib,
-	csljson: csljson
-    };
+    //var bib = engine.makeBibliography();
+ 
+    return csljson;
+//    return {
+//	bibliography: bib,
+//	csljson: csljson
+//    };
 }
 
 function stripBraces(s) {
@@ -85,6 +86,8 @@ function jsonToCSLJSON(json) {
 		    if (typeof k2 === "string") {
                         if (k2.toLowerCase() === "citationkey") {
 			    ID = obj[k2];
+			    ID = ID.toLowerCase();
+			    ID = ID.charAt(0).toUpperCase() + ID.slice(1);
 			    cslJson[ID] = {};
                         }
 		    }
@@ -117,10 +120,12 @@ function jsonToCSLJSON(json) {
 			    cslJson[ID]["journal"] = tags.journal ? stripBraces(tags.journal) : undefined;
 
 			    // Parse date.
-			    cslJson[ID]["issued"] = { year: undefined, month: undefined, day: undefined };
-			    cslJson[ID]["issued"]["year"] = tags.year ? tags.year : undefined;
-			    cslJson[ID]["issued"]["month"] = tags.month ? monthToNum(tags.month) : undefined;
-			    cslJson[ID]["issued"]["day"] = tags.day ? tags.day : undefined;
+                            var d = [];
+                            tags.year ? d.push(tags.year) : undefined;
+                            tags.month ? d.push(tags.month) : undefined;
+                            tags.day ? d.push(tags.day) : undefined;
+
+			    cslJson[ID]["issued"] = {"date-parts" : [d]};
 
 			    // Parse authors
 			    // FIXME Needs to better understand names of institutions vs people,
