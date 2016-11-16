@@ -64,7 +64,19 @@ function monthToNum(month) {
 
     return undefined;
 }
-    
+
+function upperCase(s) {
+    return s = s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function upperCaseKey(s) {
+    s = s.toLowerCase();
+    sp = s.split("-");
+    for (i =0; i<sp.length; i++) {
+      sp[i] = upperCase(sp[i])
+    }
+    return sp.join("-");
+}
 
 function jsonToCSLJSON(json) {
     // This is half-arsed, but it works for my purposes.
@@ -86,8 +98,7 @@ function jsonToCSLJSON(json) {
 		    if (typeof k2 === "string") {
                         if (k2.toLowerCase() === "citationkey") {
 			    ID = obj[k2];
-			    ID = ID.toLowerCase();
-			    ID = ID.charAt(0).toUpperCase() + ID.slice(1);
+			    ID = upperCaseKey(ID);
 			    cslJson[ID] = {};
                         }
 		    }
